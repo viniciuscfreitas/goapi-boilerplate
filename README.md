@@ -385,7 +385,8 @@ cd meu-novo-projeto
 2. **Personalize a configuração**
 ```bash
 # Edite config.yaml com suas configurações
-# Modifique o nome do módulo em go.mod
+# Modifique o nome do módulo em go.mod para seu projeto
+# Exemplo: module github.com/seu-usuario/meu-projeto
 # Atualize as variáveis de ambiente
 ```
 

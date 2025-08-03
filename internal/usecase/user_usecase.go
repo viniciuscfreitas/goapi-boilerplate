@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/fisiopet/bp/internal/domain/auth"
-	"github.com/fisiopet/bp/internal/domain/repository"
-	"github.com/fisiopet/bp/internal/domain/user"
+	"go-api-boilerplate/internal/domain/auth"
+	"go-api-boilerplate/internal/domain/repository"
+	"go-api-boilerplate/internal/domain/user"
 )
 
 // UserUseCase implementa os casos de uso relacionados a usuários

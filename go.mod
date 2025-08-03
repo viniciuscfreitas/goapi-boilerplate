@@ -1,4 +1,4 @@
-module github.com/fisiopet/bp
+module go-api-boilerplate
 
 go 1.23.0
 

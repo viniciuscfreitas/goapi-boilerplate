@@ -3,7 +3,8 @@ package repository
 import (
 	"testing"
 
-	"github.com/fisiopet/bp/internal/domain/repository"
+	"go-api-boilerplate/internal/domain/repository"
+
 	"github.com/stretchr/testify/assert"
 )
 

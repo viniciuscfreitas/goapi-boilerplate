@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/fisiopet/bp/internal/domain/user"
+	"go-api-boilerplate/internal/domain/user"
 )
 
 // UserRepository define os contratos para persistência de usuários

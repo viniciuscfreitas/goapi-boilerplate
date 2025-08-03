@@ -3,9 +3,10 @@ package router
 import (
 	"log/slog"
 
-	"github.com/fisiopet/bp/internal/domain/auth"
-	"github.com/fisiopet/bp/internal/infrastructure/http/handlers"
-	"github.com/fisiopet/bp/internal/infrastructure/http/middleware"
+	"go-api-boilerplate/internal/domain/auth"
+	"go-api-boilerplate/internal/infrastructure/http/handlers"
+	"go-api-boilerplate/internal/infrastructure/http/middleware"
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"

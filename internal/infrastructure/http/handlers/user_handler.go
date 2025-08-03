@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/fisiopet/bp/internal/domain/user"
-	"github.com/fisiopet/bp/internal/usecase"
+	"go-api-boilerplate/internal/domain/user"
+	"go-api-boilerplate/internal/usecase"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )

@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	domainRepo "github.com/fisiopet/bp/internal/domain/repository"
-	"github.com/fisiopet/bp/internal/domain/user"
-	db "github.com/fisiopet/bp/internal/infrastructure/database"
+	domainRepo "go-api-boilerplate/internal/domain/repository"
+	"go-api-boilerplate/internal/domain/user"
+	db "go-api-boilerplate/internal/infrastructure/database"
 	"github.com/google/uuid"
 )
 

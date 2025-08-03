@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/fisiopet/bp/internal/domain/auth"
+	"go-api-boilerplate/internal/domain/auth"
 	"github.com/gin-gonic/gin"
 )
 
