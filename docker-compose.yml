@@ -1,0 +1,46 @@
+services:
+  # Serviço da nossa API
+  api:
+    build: .
+    container_name: bp_api
+    ports:
+      - "8080:8080"
+    environment:
+      # Aqui sobrescrevemos as configurações do config.yaml para o ambiente Docker.
+      # O mais importante: o host do banco de dados agora é 'db', o nome do serviço do Postgres.
+      - APP_DB_HOST=db
+      - APP_DB_PORT=5432
+      - APP_DB_USER=postgres
+      - APP_DB_PASSWORD=secret
+      - APP_DB_NAME=boilerplate
+      - APP_LOG_LEVEL=info
+      - APP_ENV=production
+    depends_on:
+      - db
+    networks:
+      - bp_network
+    restart: unless-stopped
+
+  # Serviço do Banco de Dados
+  db:
+    image: postgres:15-alpine
+    container_name: bp_postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=boilerplate
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - bp_network
+
+volumes:
+  postgres_data:
+
+networks:
+  bp_network:
+    driver: bridge
