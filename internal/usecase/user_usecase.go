@@ -4,19 +4,22 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/fisiopet/bp/internal/domain/auth"
 	"github.com/fisiopet/bp/internal/domain/repository"
 	"github.com/fisiopet/bp/internal/domain/user"
 )
 
 // UserUseCase implementa os casos de uso relacionados a usuários
 type UserUseCase struct {
-	userRepo repository.UserRepository
+	userRepo   repository.UserRepository
+	jwtService auth.JWTService
 }
 
 // NewUserUseCase cria uma nova instância de UserUseCase
-func NewUserUseCase(userRepo repository.UserRepository) *UserUseCase {
+func NewUserUseCase(userRepo repository.UserRepository, jwtService auth.JWTService) *UserUseCase {
 	return &UserUseCase{
-		userRepo: userRepo,
+		userRepo:   userRepo,
+		jwtService: jwtService,
 	}
 }
 
@@ -239,7 +242,8 @@ type AuthenticateUserInput struct {
 
 // AuthenticateUserOutput representa os dados de saída da autenticação
 type AuthenticateUserOutput struct {
-	User *user.User `json:"user"`
+	User  *user.User `json:"user"`
+	Token string     `json:"token"`
 }
 
 // AuthenticateUser autentica um usuário
@@ -264,5 +268,14 @@ func (uc *UserUseCase) AuthenticateUser(ctx context.Context, input AuthenticateU
 		return nil, user.ErrInvalidPassword
 	}
 
-	return &AuthenticateUserOutput{User: userEntity}, nil
+	// Gera o token JWT
+	token, err := uc.jwtService.GenerateToken(userEntity.ID, userEntity.Email, string(userEntity.Role))
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate token: %w", err)
+	}
+
+	return &AuthenticateUserOutput{
+		User:  userEntity,
+		Token: token,
+	}, nil
 }

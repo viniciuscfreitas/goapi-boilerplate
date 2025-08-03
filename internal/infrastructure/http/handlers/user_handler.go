@@ -408,7 +408,10 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, output.User)
+	c.JSON(http.StatusOK, gin.H{
+		"user":  output.User,
+		"token": output.Token,
+	})
 }
 
 // ErrorResponse representa uma resposta de erro padronizada

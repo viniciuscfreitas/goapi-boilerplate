@@ -25,9 +25,18 @@ test: ## Executa os testes
 	@echo "Executando testes..."
 	go test -v ./...
 
+test-integration: ## Executa os testes de integração
+	@echo "Executando testes de integração..."
+	go test -v ./tests/integration/...
+
 test-coverage: ## Executa os testes com cobertura
 	@echo "Executando testes com cobertura..."
 	go test -v -cover ./...
+
+test-all: ## Executa todos os testes (unitários + integração)
+	@echo "Executando todos os testes..."
+	go test -v ./...
+	go test -v ./tests/integration/...
 
 clean: ## Limpa arquivos de build
 	@echo "Limpando arquivos de build..."
@@ -53,13 +62,25 @@ db-logs: ## Mostra logs do banco de dados
 	docker-compose logs -f postgres
 
 # Comandos de migração e geração de código
-migrate: ## Executa as migrações
-	@echo "Executando migrações..."
-	psql -h localhost -p 5433 -U postgres -d boilerplate -f sql/migrations/001_create_users_table.sql
+migrate: ## Executa as migrações com goose
+	@echo "Executando migrações com goose..."
+	$(HOME)/go/bin/goose -dir sql/migrations postgres "host=localhost port=5433 user=postgres password=secret dbname=boilerplate sslmode=disable" up
+
+migrate-status: ## Verifica status das migrações
+	@echo "Verificando status das migrações..."
+	$(HOME)/go/bin/goose -dir sql/migrations postgres "host=localhost port=5433 user=postgres password=secret dbname=boilerplate sslmode=disable" status
+
+migrate-rollback: ## Faz rollback da última migração
+	@echo "Fazendo rollback da última migração..."
+	$(HOME)/go/bin/goose -dir sql/migrations postgres "host=localhost port=5433 user=postgres password=secret dbname=boilerplate sslmode=disable" down
 
 generate: ## Gera código com sqlc
 	@echo "Gerando código com sqlc..."
 	sqlc generate
+
+generate-docs: ## Gera documentação Swagger
+	@echo "Gerando documentação Swagger..."
+	$(HOME)/go/bin/swag init -g cmd/api/main.go -o docs
 
 # Comandos de desenvolvimento completo
 setup: ## Configura o ambiente de desenvolvimento
@@ -74,9 +95,8 @@ setup: ## Configura o ambiente de desenvolvimento
 start: ## Inicia o ambiente completo (banco + servidor)
 	@echo "Iniciando ambiente completo..."
 	docker-compose up -d
-	@echo "Aguardando banco de dados..."
-	sleep 5
-	go run $(MAIN_PATH)
+	@echo "✅ Ambiente iniciado! API disponível em http://localhost:8080"
+	@echo "📊 Para ver logs: docker-compose logs -f api"
 
 stop: ## Para o ambiente completo
 	@echo "Parando ambiente completo..."

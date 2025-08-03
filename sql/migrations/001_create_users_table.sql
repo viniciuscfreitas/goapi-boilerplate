@@ -1,4 +1,5 @@
--- Create users table
+-- +goose Up
+-- +goose StatementBegin
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -36,4 +37,5 @@ ALTER TABLE users ADD CONSTRAINT check_name_not_empty
 
 -- Add constraint to ensure password is not empty
 ALTER TABLE users ADD CONSTRAINT check_password_not_empty 
-    CHECK (password != ''); 
+    CHECK (password != '');
+-- +goose StatementEnd

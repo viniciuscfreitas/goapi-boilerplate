@@ -11,11 +11,13 @@ Um boilerplate robusto e profissional para desenvolvimento de APIs RESTful em Go
 ## 🚀 Características
 
 - **Clean Architecture**: Separação clara entre domínio, casos de uso e infraestrutura
+- **Autenticação JWT Completa**: Middleware de autenticação e autorização por roles
+- **Segurança Robusta**: Rate limiting, headers de segurança, CORS configurado
+- **Validação de Dados**: Tags struct binding com validação automática
 - **Configuração Flexível**: Suporte a arquivos YAML e variáveis de ambiente
 - **Observabilidade**: Logging estruturado JSON com request tracking
 - **Containerização**: Docker multi-stage para imagens otimizadas
 - **Banco de Dados**: PostgreSQL com sqlc para queries type-safe
-- **Autenticação**: Sistema de usuários com bcrypt e roles
 - **Testes**: Estrutura preparada para testes unitários e de integração
 
 ### Pré-requisitos
@@ -81,19 +83,24 @@ go run cmd/api/main.go
 
 ## 📊 Endpoints da API
 
-### Autenticação
+### Autenticação (Públicas)
 - `POST /api/v1/auth/login` - Login de usuário
+- `POST /api/v1/auth/register` - Registro de usuário
 
-### Usuários
-- `POST /api/v1/users` - Criar usuário
+### Usuários (Protegidas - Requer Autenticação)
 - `GET /api/v1/users` - Listar usuários (com paginação)
 - `GET /api/v1/users/{id}` - Buscar usuário por ID
 - `GET /api/v1/users/email?email=...` - Buscar usuário por email
+
+### Usuários (Admin - Requer Role Admin)
+- `POST /api/v1/users` - Criar usuário
 - `PUT /api/v1/users/{id}` - Atualizar usuário
 - `DELETE /api/v1/users/{id}` - Deletar usuário
 
 ### Sistema
 - `GET /health` - Health check da API
+- `GET /swagger/*` - Documentação Swagger UI
+- `GET /swagger.json` - Especificação OpenAPI
 
 ## 📁 Estrutura do Projeto
 
@@ -176,20 +183,23 @@ go run cmd/api/main.go
 
 1. **API-First**: Backend agnóstico que expõe API RESTful sem conhecimento sobre clientes
 2. **Clean Architecture**: Lógica de negócio completamente desacoplada da infraestrutura
-3. **Tipagem Forte**: Sistema de tipos do Go para máxima segurança
-4. **Testabilidade**: Arquitetura que facilita testes unitários e de integração
-5. **Observabilidade**: Logs estruturados para monitoramento em produção
+3. **Segurança por Design**: Autenticação JWT, rate limiting e validação robusta
+4. **Tipagem Forte**: Sistema de tipos do Go para máxima segurança
+5. **Testabilidade**: Arquitetura que facilita testes unitários e de integração
+6. **Observabilidade**: Logs estruturados para monitoramento em produção
 
 ### Stack Tecnológica
 
 #### Backend (API RESTful)
 - **Linguagem**: Go (Golang)
 - **Framework Web**: Gin
+- **Autenticação**: JWT com bcrypt
 - **Banco de Dados**: PostgreSQL
 - **Comunicação com DB**: sqlc
 - **Containerização**: Docker
 - **Configuração**: Viper
 - **Logging**: slog
+- **Segurança**: Rate limiting, CORS, Headers de segurança
 
 ## 📚 Documentação das Camadas
 
@@ -259,12 +269,21 @@ go test ./...
 go test ./internal/domain/user/
 go test ./internal/usecase/
 go test ./internal/infrastructure/repository/
+
+# Testes de integração
+go test ./tests/integration/
 ```
 
 ### Cobertura de Testes
 ```bash
 go test -cover ./...
 ```
+
+### Tipos de Testes
+- **Testes Unitários**: Domínio, casos de uso e repositórios
+- **Testes de Integração**: Middleware de autenticação e rate limiting
+- **Testes de Validação**: Verificação de entrada de dados
+- **Testes de Segurança**: Autenticação e autorização
 
 ## ⚙️ Configuração
 
@@ -307,6 +326,33 @@ docker-compose up -d
 docker-compose down
 ```
 
+## 🔐 Segurança e Autenticação
+
+### Autenticação JWT
+O sistema utiliza JWT (JSON Web Tokens) para autenticação stateless:
+
+```bash
+# Login para obter token
+curl -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "password123"}'
+
+# Usar token em requisições protegidas
+curl -X GET http://localhost:8080/api/v1/users \
+  -H "Authorization: Bearer <seu-token-jwt>"
+```
+
+### Middleware de Segurança
+- **Rate Limiting**: 100 requests/segundo por IP
+- **CORS**: Configuração segura para cross-origin requests
+- **Headers de Segurança**: XSS, CSRF, Content-Type protection
+- **Request ID**: Rastreabilidade completa de requests
+
+### Roles e Permissões
+- **admin**: Acesso completo ao sistema
+- **user**: Acesso limitado (leitura de dados)
+- **guest**: Acesso básico (apenas visualização)
+
 ## 📈 Logs e Observabilidade
 
 O projeto utiliza logging estruturado JSON com slog:
@@ -324,6 +370,42 @@ O projeto utiliza logging estruturado JSON com slog:
   "user_agent": "curl/8.7.1"
 }
 ```
+
+## 🚀 Usando como Boilerplate
+
+### Para Novos Projetos
+Este boilerplate serve como base sólida para novos projetos:
+
+1. **Clone o repositório**
+```bash
+git clone <repository-url> meu-novo-projeto
+cd meu-novo-projeto
+```
+
+2. **Personalize a configuração**
+```bash
+# Edite config.yaml com suas configurações
+# Modifique o nome do módulo em go.mod
+# Atualize as variáveis de ambiente
+```
+
+3. **Adicione suas entidades**
+```bash
+# Siga o padrão estabelecido:
+# 1. Crie entidade em internal/domain/
+# 2. Defina interface do repositório
+# 3. Implemente casos de uso
+# 4. Crie queries SQL
+# 5. Implemente handlers HTTP
+```
+
+### Padrões Estabelecidos
+- **Entidades**: `internal/domain/[entity]/[entity].go`
+- **Repositórios**: `internal/domain/repository/[entity]_repository.go`
+- **Casos de Uso**: `internal/usecase/[entity]_usecase.go`
+- **Handlers**: `internal/infrastructure/http/handlers/[entity]_handler.go`
+- **Queries**: `sql/queries/[entity].sql`
+- **Migrações**: `sql/migrations/`
 
 ## 🤝 Contribuição
 

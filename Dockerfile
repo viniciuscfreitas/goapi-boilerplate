@@ -1,7 +1,7 @@
 # --- Estágio 1: Build ---
 # Usamos uma imagem oficial do Go com Alpine Linux, que é menor.
 # 'as builder' dá um nome a este estágio para que possamos nos referir a ele mais tarde.
-FROM golang:1.22-alpine as builder
+FROM golang:1.23-alpine as builder
 
 # Define o diretório de trabalho dentro do container.
 WORKDIR /app
@@ -39,6 +39,9 @@ COPY --from=builder /app/server .
 
 # Também precisamos copiar nosso arquivo de configuração para que a aplicação possa lê-lo.
 COPY ./config.yaml ./
+
+# Copia a documentação Swagger
+COPY ./docs ./docs
 
 # Cria um usuário não-root para segurança
 RUN addgroup -g 1001 -S appgroup && \
